@@ -72,4 +72,4 @@ This repository is a **prototype, not a validated identification system**.
 
 A research-grade extension would test independent scans from the same individuals, standardise or register anatomy before comparison, evaluate genuine–impostor score distributions in a larger cohort, and quantify identification performance with appropriate validation metrics.
 
-[trungnb](https://github.com/trungnb) · [Academic website](https://trungnb.github.io/)
+[Academic website](https://trungnb.github.io/)
