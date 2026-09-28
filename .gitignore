@@ -13,7 +13,7 @@
 !/results/p1vsp2_result.csv
 !/results/figures/
 /results/figures/*
-!/results/figures/prototype-overview.png
+!/results/figures/prototype-overview.svg
 !/scripts/
 /scripts/*
 !/scripts/render_figures.py

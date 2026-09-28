@@ -52,7 +52,7 @@ The prototype connects segmentation, projection and baseline Dice/IoU comparison
 - [Comparison notebook](notebooks/Comparison.ipynb)
 - [Repeated-run results and storage](results/summary_report.csv)
 - [Between-case results](results/p1vsp2_result.csv)
-- [Figure script](scripts/render_figures.py) — reads the two saved CSVs; requires Matplotlib.
+- [Figure script](scripts/render_figures.py) — regenerates the SVG overview from the two saved CSVs; no analysis rerun.
 - [Prototype dependencies](requirements.txt)
 
 ## Scope and limitations
