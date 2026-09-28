@@ -65,7 +65,7 @@ time_ax, size_ax, similarity_ax = (
     fig.add_subplot(grid[1, :]),
 )
 fig.suptitle(
-    "3D vs 2D: time, storage and similarity",
+    "Prototype 3D-to-2D comparison: time, storage and overlap",
     x=0.035,
     ha="left",
     y=0.975,
@@ -75,7 +75,7 @@ fig.suptitle(
 fig.text(
     0.035,
     0.925,
-    "Two CBCT scans • results from earlier prototype runs",
+    "Two CBCT scans • historical proof-of-concept results",
     fontsize=11,
     color="#586777",
 )
@@ -139,7 +139,7 @@ similarity_ax.set_xticks([0, 0.25, 0.5, 0.75, 1])
 similarity_ax.invert_yaxis()
 similarity_ax.axhline(len(summary) - 0.5, color="#D5DEE5", linestyle="--")
 similarity_ax.set_title(
-    "3–4  Same-person projections are similar; the two cases differ",
+    "3–4  Repeated same-scan projections are consistent; the two cases differ",
     loc="left",
     pad=14,
     fontsize=12,
@@ -148,7 +148,7 @@ similarity_ax.set_title(
 fig.text(
     0.035,
     0.066,
-    "Same-person checks repeat the pipeline on the same scan. Comparison times exclude segmentation and projection generation.",
+    "Repeated-run checks use the same scan and assess computational repeatability, not identification accuracy. Comparison times exclude segmentation and projection generation.",
     fontsize=9,
     color="#586777",
 )
