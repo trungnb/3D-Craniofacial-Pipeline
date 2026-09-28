@@ -1,43 +1,69 @@
-# Craniofacial shape comparison · prototype
+# 3D-to-2D craniofacial comparison · prototype
 
-**Idea:** explore craniofacial shape as a representation for comparing individuals.
-**My approach:** turn CT volumes into anatomical masks and compact 2D projections,
-then compare repeated runs and two example cases using overlap scores.
+**Research idea:** explore multi-view 2D representations of teeth, jaws and sinuses
+to reduce the storage and computational demands of forensic ante-mortem (AM) versus
+post-mortem (PM) comparison.
+
+**My approach:** apply existing segmentation models, turn anatomical masks into
+three-view silhouettes, and compare the saved storage footprint, comparison time
+and overlap scores of the 3D and 2D representations.
 
 ```mermaid
 flowchart LR
-    Q["IDEA<br/>Compare individuals<br/>through craniofacial shape"]
-    Q --> A["REPRESENT<br/>CT to anatomical masks<br/>using TotalSegmentator"]
-    A --> B["MY APPROACH<br/>3D masks + 2D projections<br/>Repeat-run and between-case overlap"]
-    B --> C["PROTOTYPE OUTPUT<br/>Two cases<br/>Dice, IoU, time and size"]
-    A --> D["Feature exploration<br/>Tooth and pulp volumes"]
+    Q["RESEARCH IDEA<br/>AM–PM comparison with less<br/>storage and computation"]
+    Q --> A["PROTOTYPE INPUT<br/>Two CBCT scans<br/>in NIfTI format"]
+    A --> B["MY APPROACH<br/>Segment anatomy<br/>Create silhouettes in three views"]
+    B --> C["PROTOTYPE CHECKS<br/>3D vs 2D size and comparison time<br/>Overlap across runs and cases"]
     classDef idea fill:#EDF7F6,stroke:#168B8A,color:#17324D
     classDef output fill:#17324D,stroke:#17324D,color:#FFFFFF
     class Q idea
     class C output
 ```
 
-![Saved overlap scores and processing times for the two-case prototype](results/figures/prototype-overview.png)
+![Saved storage footprints and 3D versus 2D comparison times](results/figures/prototype-overview.png)
 
 ## What the prototype produced
 
-| Saved comparison | Mean Dice | Mean IoU |
-|---|---:|---:|
-| Person1, repeated runs · volumes | 0.999998 | 0.999997 |
-| Person2, repeated runs · volumes | 0.999999 | 0.999998 |
-| Person1 vs Person2 · volumes | 0.291049 | 0.288615 |
-| Person1 vs Person2 · projections | 0.323906 | 0.312914 |
+| Case | Input NIfTI | Segmented 3D output | 2D projection output |
+|---|---:|---:|---:|
+| Person1 | 512.61 MB | 160.34 MB | 1.03 MB |
+| Person2 | 350.99 MB | 119.27 MB | 897.77 KB |
 
-These are saved overlap comparisons. Repeated-run agreement describes consistency
-between outputs; it does not measure accuracy against annotated anatomy or establish
-identification performance. Values and recorded processing times are available in the
-[source tables](results/README.md).
+Storage values are from run 1, preserving the export's unit labels. The figure converts
+them to MiB using the notebook's 1024-based size formatter.
+
+| Saved comparison | 3D comparison time | 2D comparison time |
+|---|---:|---:|
+| Person1, repeated runs | 608.80 s | 7.92 s |
+| Person2, repeated runs | 449.86 s | 6.80 s |
+| Person1 vs Person2 | 392.51 s | 7.77 s |
+
+These recorded footprints and comparison times illustrate the resource question
+behind the prototype. They do not include segmentation or projection-generation time
+in the comparison timings; hardware conditions are not established by the saved tables.
+
+<details>
+<summary>View saved overlap scores</summary>
+
+![Saved Dice and IoU across repeated runs and two cases](results/figures/overlap-comparison.png)
+
+Repeated-run volume Dice was approximately 0.999998–0.999999. Between Person1 and
+Person2, mean Dice was 0.291049 for volumes and 0.323906 for projections.
+These describe overlap of the saved representations. Identification accuracy and
+agreement with anatomical reference annotations have not been established.
+
+</details>
 
 ## What I built
 
 - Connected existing TotalSegmentator tasks to NIfTI input, output folders, and timing logs.
-- Exported orthogonal binary projections and compared 3D / 2D representations.
-- Summarized processing time, output size, Dice and IoU; explored tooth and pulp volume features.
+- Exported binary silhouettes in axial, coronal and sagittal views.
+- Implemented baseline Dice / IoU comparisons and recorded 3D / 2D storage and comparison time.
+
+**Current scope:** two CBCT scans, with repeated-run and between-case comparisons.
+AM–PM identification is the intended application. The broader proposal plans head CT
+data, larger reference databases and simulations of missing structures;
+these extensions are [mapped separately from the implemented work](docs/methodology.md).
 
 ## Notebook map
 
@@ -45,9 +71,9 @@ identification performance. Values and recorded processing times are available i
 |---|---|
 | [3D Shape Analysis Pipeline](notebooks/3D_Shape_Analysis_Pipeline.ipynb) | Segmentation and projection export |
 | [Comparison](notebooks/Comparison.ipynb) | Repeated-run and between-case comparisons |
-| [Tooth and pulp volume exploration](notebooks/sex%26age.ipynb) | Volume features; the original filename is `sex&age`, but no age/sex prediction result is claimed |
+| [Tooth and pulp volume exploration](notebooks/sex%26age.ipynb) | Supplementary volume features; no age/sex prediction result is reported |
 
-**Data:** two cases labeled Person1 and Person2. Source CT/NIfTI images and segmentation
+**Data:** selected derived results are included; source CBCT scans and segmentation
 masks are not distributed. [Input requirements](data/README.md).
 
 ## Explore the project

@@ -8,12 +8,11 @@ No segmentation, synthesis, model training, evaluation, or reproduction run was 
 the original and published notebook files. Original analysis cell sources and their
 order are unchanged. No heading cell was inserted, so zero-based source references
 still match. Publication clears session metadata, widget state and output previews.
-Only aggregate CTGAN reporting cells retain their stream outputs. Original notebooks
-remain in an ignored `.local-originals/` directory on the author's machine.
+Published notebooks have their outputs cleared. Original notebooks remain in an
+ignored `.local-originals/` directory on the author's machine.
 
 ## Result tables
 The published input CSVs are existing saved result files, byte-for-byte unchanged.
-Dental `ratio_summary.csv`, when present, is a descriptive aggregation of saved ratios.
 
 See [the result index](../results/README.md) and [table fingerprints](result-sources.json).
 Original CSV / notebook files do not establish the exact historical data version,
@@ -22,10 +21,17 @@ execution date, hardware or analysis package versions; those details remain unve
 ## Figures
 `scripts/render_figures.py` reads the published CSVs and renders PNG and SVG figures.
 It performs chart formatting and display-unit conversion only; it does not import
-segmentation or generative-model libraries. The Python lockfile covers these portfolio
-tools. Figure sources are documented in the result index and figure captions.
+segmentation libraries. The overview uses saved run-1 sizes and comparison timings;
+the supplementary figure uses saved overlap scores. The Python lockfile covers these
+portfolio tools. Figure sources are documented in the result index and figure captions.
+
+## Research framing and modality
+The research framing follows the author's proposal, *3D to 2D Projections Analysis
+of Teeth, Jaws and Sinuses for Human Identification*, and the author's clarification
+that this repository is its prototype. The author confirmed that the two prototype
+inputs are CBCT scans. The proposal's planned head CT study is described as future work.
+Only modality and case count are included in the public dataset description.
 
 ## Publication scope
-Raw CT images, segmentation masks, raw ANSUR II rows, generated synthetic rows,
-unrelated notebooks, and local backups are excluded. Code links to external packages
-and datasets do not transfer their licenses. See [LICENSE](../LICENSE).
+Source CBCT scans, segmentation masks, unrelated notebooks and local backups are
+excluded. Code links to external packages do not transfer their licenses. See [LICENSE](../LICENSE).
