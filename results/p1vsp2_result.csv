@@ -1,0 +1,3 @@
+comparison_type,avg_dice_score,avg_iou_score,total_comparison_time_seconds
+Volumes (Person1 vs Person2),0.2910488827850169,0.2886149530282018,392.50839400291443
+Projections (Person1 vs Person2),0.3239059680506259,0.3129137101394299,7.769993782043457

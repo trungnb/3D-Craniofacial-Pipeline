@@ -1,0 +1,26 @@
+# Only explicitly selected portfolio files are published.
+/.local-originals/
+/.venv/
+/.DS_Store
+**/.DS_Store
+**/__pycache__/
+**/.ipynb_checkpoints/
+/.env*
+*.nii
+*.nii.gz
+*.dcm
+*.xlsx
+*.docx
+/data/*
+!/data/README.md
+/notebooks/*
+!/notebooks/3D_Shape_Analysis_Pipeline.ipynb
+!/notebooks/Comparison.ipynb
+!/notebooks/sex&age.ipynb
+/results/**
+!/results/README.md
+!/results/figures/
+!/results/figures/*.png
+!/results/figures/*.svg
+!/results/summary_report.csv
+!/results/p1vsp2_result.csv

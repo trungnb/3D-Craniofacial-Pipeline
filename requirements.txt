@@ -1,0 +1,5 @@
+nibabel
+TotalSegmentator
+jupyter
+pandas
+matplotlib
