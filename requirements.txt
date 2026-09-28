@@ -1,0 +1,7 @@
+numpy
+pandas
+matplotlib
+nibabel
+SimpleITK
+opencv-python
+TotalSegmentator
