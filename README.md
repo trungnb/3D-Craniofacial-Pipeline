@@ -13,7 +13,7 @@ A two-CBCT proof-of-concept exploring multi-view silhouettes as compact represen
 
 **Dice and IoU measure overlap:** both range from 0 (no overlap) to 1 (identical masks). Values above are rounded; the CSVs retain the original precision.
 
-![Four prototype checks: comparison time, storage, repeated same-scan overlap and between-case overlap](results/figures/prototype-overview.png)
+![Four prototype checks: comparison time, storage, repeated same-scan overlap and between-case overlap](results/figures/prototype-overview.svg)
 
 ## How I approached it
 
