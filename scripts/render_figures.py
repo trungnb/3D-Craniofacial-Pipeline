@@ -161,5 +161,5 @@ fig.text(
 )
 output = RESULTS / "figures" / "prototype-overview.png"
 output.parent.mkdir(exist_ok=True)
-fig.savefig(output, dpi=180, bbox_inches="tight", facecolor="white")
+fig.savefig(output, dpi=180, bbox_inches="tight", facecolor="white")\nfig.savefig(RESULTS / "figures" / "prototype-overview.svg", bbox_inches="tight", facecolor="white")
 plt.close(fig)
