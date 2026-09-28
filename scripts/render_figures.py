@@ -114,20 +114,26 @@ comparison_panel(
     "Stored output size (MiB; run 1)",
 )
 
-scores = [float(r["pro_compare_dice"]) for r in summary] + [
-    float(between["Projections (Person1 vs Person2)"]["avg_dice_score"])
-]
-similarity_ax.barh(range(len(scores)), scores, 0.5, color=TEAL)
-for i, score in enumerate(scores):
-    label = f"≈ {score:.2f}" if i < len(summary) else f"{score:.3f}"
-    similarity_ax.text(
-        score + 0.018, i, label, va="center", fontsize=12, fontweight="bold"
+for metric, offset, color in [("dice", -0.16, TEAL), ("iou", 0.16, "#A3D9D5")]:
+    scores = [float(r[f"pro_compare_{metric}"]) for r in summary] + [
+        float(between["Projections (Person1 vs Person2)"][f"avg_{metric}_score"])
+    ]
+    similarity_ax.barh(
+        [i + offset for i in range(len(scores))],
+        scores,
+        0.27,
+        color=color,
+        label="Dice" if metric == "dice" else "IoU",
     )
+    for i, score in enumerate(scores):
+        label = f"≈ {score:.2f}" if i < len(summary) else f"{score:.3f}"
+        similarity_ax.text(score + 0.018, i + offset, label, va="center", fontsize=10)
+similarity_ax.legend(loc="lower right", frameon=False, title="2D overlap")
 similarity_ax.set(
     yticks=range(len(labels)),
     yticklabels=labels,
     xlim=(0, 1.14),
-    xlabel="Projection Dice score · closer to 1 = more similar",
+    xlabel="Projection overlap score · closer to 1 = more similar",
 )
 similarity_ax.set_xticks([0, 0.25, 0.5, 0.75, 1])
 similarity_ax.invert_yaxis()

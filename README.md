@@ -10,27 +10,37 @@ only the full 3D volumes.
 |---|---|
 | **1. Comparing projections takes less time than comparing 3D volumes.** | Across the three saved comparisons: **6.80–7.92 s for 2D**, versus **392.51–608.80 s for 3D**. |
 | **2. Projections need less storage than 3D volumes.** | Person1: **160.34 MB → 1.03 MB**. Person2: **119.27 MB → 897.77 KB** (3D output → 2D output, run 1). |
-| **3. Projections from the same person are similar.** | Projection Dice is **approximately 1.00** for both repeated-run comparisons. |
-| **4. Projections from two different people differ.** | Person1 vs Person2: projection Dice **0.324**. |
+| **3. Projections from the same person are similar.** | Projection Dice and IoU are **approximately 1.00** for both repeated-run comparisons. |
+| **4. Projections from two different people differ.** | Person1 vs Person2: projection Dice **0.324**, IoU **0.313**. |
 
-**Dice measures overlap: a score closer to 1 means more similar projections.** Values above are rounded; the CSVs retain the original precision.
+**Dice and IoU measure overlap: both range from 0 (no overlap) to 1 (identical masks).** Values above are rounded; the CSVs retain the original precision.
 
 ![Four prototype checks: comparison time, storage, same-person overlap and between-person overlap](results/figures/prototype-overview.png)
 
 ## How I approached it
 
 ```mermaid
-flowchart LR
-    A["INPUT<br/>Two CBCT scans"] --> B["EXTRACT ANATOMY<br/>TotalSegmentator<br/>Craniofacial structures and teeth"]
-    B --> C["MAKE IT COMPACT<br/>Binary silhouettes<br/>Axial, coronal and sagittal views"]
-    C --> D["CHECK FOUR GOALS<br/>Less comparison time and storage<br/>Same-person similarity and between-person difference"]
-    B --> D
+flowchart TD
+    A["Two CBCT scans in NIfTI format<br/>Run the pipeline twice on each scan"] --> B["SEGMENT<br/>TotalSegmentator: craniofacial structures + teeth"]
+    B --> C["3D binary masks<br/>One mask per anatomical structure"]
+    C --> D["PROJECT TO 2D<br/>Maximum projection along each axis<br/>Axial, coronal and sagittal silhouettes"]
+    C --> E["EFFICIENCY<br/>Compare 3D vs 2D storage<br/>and comparison time"]
+    D --> E
+    C --> F["PAIR CORRESPONDING STRUCTURES<br/>For 2D, also match the projection view"]
+    D --> F
+    F --> G["SAME PERSON<br/>Run 1 vs run 2 of the same scan<br/>Measure Dice + IoU"]
+    F --> H["DIFFERENT PEOPLE<br/>Person1 vs Person2, run 1<br/>Measure Dice + IoU"]
+    classDef compact fill:#168B8A,stroke:#168B8A,color:#FFFFFF
     classDef result fill:#17324D,stroke:#17324D,color:#FFFFFF
-    class D result
+    class D compact
+    class E,G,H result
 ```
 
-I connected the segmentation and projection steps, implemented baseline Dice / IoU
-comparisons, and recorded output sizes and comparison times.
+**Idea:** preserve anatomical shape in three compact silhouettes per structure, then
+check whether they retain similarity while reducing storage and comparison time.
+I connected segmentation, projection and baseline Dice / IoU comparison. For
+between-person comparisons, the code resamples 3D masks to the reference grid
+and resizes 2D masks when dimensions differ before calculating overlap.
 
 ## Read the code and results
 
