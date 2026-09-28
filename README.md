@@ -1,89 +1,55 @@
-# 3D-to-2D craniofacial comparison · prototype
+# 3D-to-2D craniofacial comparison
 
-**Research idea:** explore multi-view 2D representations of teeth, jaws and sinuses
-to reduce the storage and computational demands of forensic ante-mortem (AM) versus
-post-mortem (PM) comparison.
+A two-CBCT prototype exploring multi-view silhouettes for forensic identification.
+The idea is to compare compact 2D projections of segmented anatomy instead of comparing
+only the full 3D volumes.
 
-**My approach:** apply existing segmentation models, turn anatomical masks into
-three-view silhouettes, and compare the saved storage footprint, comparison time
-and overlap scores of the 3D and 2D representations.
+## Four prototype goals
+
+| Goal | Saved result in this prototype |
+|---|---|
+| **1. Comparing projections takes less time than comparing 3D volumes.** | Across the three saved comparisons: **6.80–7.92 s for 2D**, versus **392.51–608.80 s for 3D**. |
+| **2. Projections need less storage than 3D volumes.** | Person1: **160.34 MB → 1.03 MB**. Person2: **119.27 MB → 897.77 KB** (3D output → 2D output, run 1). |
+| **3. Projections from the same person are similar.** | Projection Dice is **approximately 1.00** for both repeated-run comparisons. |
+| **4. Projections from two different people differ.** | Person1 vs Person2: projection Dice **0.324**. |
+
+**Dice measures overlap: a score closer to 1 means more similar projections.** Values above are rounded; the CSVs retain the original precision.
+
+![Four prototype checks: comparison time, storage, same-person overlap and between-person overlap](results/figures/prototype-overview.png)
+
+## How I approached it
 
 ```mermaid
 flowchart LR
-    Q["RESEARCH IDEA<br/>AM–PM comparison with less<br/>storage and computation"]
-    Q --> A["PROTOTYPE INPUT<br/>Two CBCT scans<br/>in NIfTI format"]
-    A --> B["MY APPROACH<br/>Segment anatomy<br/>Create silhouettes in three views"]
-    B --> C["PROTOTYPE CHECKS<br/>3D vs 2D size and comparison time<br/>Overlap across runs and cases"]
-    classDef idea fill:#EDF7F6,stroke:#168B8A,color:#17324D
-    classDef output fill:#17324D,stroke:#17324D,color:#FFFFFF
-    class Q idea
-    class C output
+    A["INPUT<br/>Two CBCT scans"] --> B["EXTRACT ANATOMY<br/>TotalSegmentator<br/>Craniofacial structures and teeth"]
+    B --> C["MAKE IT COMPACT<br/>Binary silhouettes<br/>Axial, coronal and sagittal views"]
+    C --> D["CHECK FOUR GOALS<br/>Less comparison time and storage<br/>Same-person similarity and between-person difference"]
+    B --> D
+    classDef result fill:#17324D,stroke:#17324D,color:#FFFFFF
+    class D result
 ```
 
-![Saved storage footprints and 3D versus 2D comparison times](results/figures/prototype-overview.png)
+I connected the segmentation and projection steps, implemented baseline Dice / IoU
+comparisons, and recorded output sizes and comparison times.
 
-## What the prototype produced
+## Read the code and results
 
-| Case | Input NIfTI | Segmented 3D output | 2D projection output |
-|---|---:|---:|---:|
-| Person1 | 512.61 MB | 160.34 MB | 1.03 MB |
-| Person2 | 350.99 MB | 119.27 MB | 897.77 KB |
+- [Segmentation and projection notebook](notebooks/3D_Shape_Analysis_Pipeline.ipynb)
+- [Comparison notebook](notebooks/Comparison.ipynb)
+- [Repeated-run results and storage](results/summary_report.csv)
+- [Between-person results](results/p1vsp2_result.csv)
+- [Figure script](scripts/render_figures.py) — reads the two saved CSVs; requires Matplotlib.
 
-Storage values are from run 1, preserving the export's unit labels. The figure converts
-them to MiB using the notebook's 1024-based size formatter.
+**Scope:** “same person” here means two pipeline runs on the **same CBCT scan**.
+The saved comparisons demonstrate these observations in two cases; they do not
+estimate identification accuracy in a larger population. AM–PM matching is the
+intended research application.
 
-| Saved comparison | 3D comparison time | 2D comparison time |
-|---|---:|---:|
-| Person1, repeated runs | 608.80 s | 7.92 s |
-| Person2, repeated runs | 449.86 s | 6.80 s |
-| Person1 vs Person2 | 392.51 s | 7.77 s |
+**Reading the numbers:** comparison times exclude segmentation and projection generation.
+Storage strings retain their original labels; the figure uses MiB because the original
+formatter divided by 1024. Exact hardware conditions are not documented in the tables.
 
-These recorded footprints and comparison times illustrate the resource question
-behind the prototype. They do not include segmentation or projection-generation time
-in the comparison timings; hardware conditions are not established by the saved tables.
+Source scans and masks are not distributed. Notebook code is preserved; historical
+outputs are presented through the saved tables. No analysis was rerun for this release.
 
-<details>
-<summary>View saved overlap scores</summary>
-
-![Saved Dice and IoU across repeated runs and two cases](results/figures/overlap-comparison.png)
-
-Repeated-run volume Dice was approximately 0.999998–0.999999. Between Person1 and
-Person2, mean Dice was 0.291049 for volumes and 0.323906 for projections.
-These describe overlap of the saved representations. Identification accuracy and
-agreement with anatomical reference annotations have not been established.
-
-</details>
-
-## What I built
-
-- Connected existing TotalSegmentator tasks to NIfTI input, output folders, and timing logs.
-- Exported binary silhouettes in axial, coronal and sagittal views.
-- Implemented baseline Dice / IoU comparisons and recorded 3D / 2D storage and comparison time.
-
-**Current scope:** two CBCT scans, with repeated-run and between-case comparisons.
-AM–PM identification is the intended application. The broader proposal plans head CT
-data, larger reference databases and simulations of missing structures;
-these extensions are [mapped separately from the implemented work](docs/methodology.md).
-
-## Notebook map
-
-| Notebook | Role |
-|---|---|
-| [3D Shape Analysis Pipeline](notebooks/3D_Shape_Analysis_Pipeline.ipynb) | Segmentation and projection export |
-| [Comparison](notebooks/Comparison.ipynb) | Repeated-run and between-case comparisons |
-| [Tooth and pulp volume exploration](notebooks/sex%26age.ipynb) | Supplementary volume features; no age/sex prediction result is reported |
-
-**Data:** selected derived results are included; source CBCT scans and segmentation
-masks are not distributed. [Input requirements](data/README.md).
-
-## Explore the project
-
-[Methods](docs/methodology.md) · [Data and provenance](docs/data-provenance.md) · [Saved tables](results/README.md) · [Viewing / chart rendering](docs/environment.md)
-
-**Status:** exploratory prototype. Results shown here were saved during earlier experiments;
-the notebooks were not rerun for this release. Figures were rendered from saved tables.
-
-**Author:** [trungnb](https://github.com/trungnb) · [Academic website](https://trungnb.github.io/)
-
-Research and educational use only; this prototype has not been clinically validated.
-See [licensing status](LICENSE) before reuse.
+[trungnb](https://github.com/trungnb) · [Academic website](https://trungnb.github.io/)
