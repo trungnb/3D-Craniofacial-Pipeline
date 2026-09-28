@@ -19,18 +19,26 @@ A two-CBCT proof-of-concept exploring multi-view silhouettes as compact represen
 
 ```mermaid
 flowchart TD
-    A["Two CBCT scans in NIfTI format<br/>Run the pipeline twice on each scan"] --> B["SEGMENT<br/>TotalSegmentator: craniofacial structures + teeth"]
-    B --> C["3D binary masks<br/>One mask per anatomical structure"]
-    C --> D["PROJECT TO 2D<br/>Maximum projection along each axis<br/>Axial, coronal and sagittal silhouettes"]
-    C --> E["EFFICIENCY<br/>Compare 3D vs 2D storage<br/>and comparison time"]
+    A["Two CBCT scans in NIfTI format<br/>Process each scan twice"] --> B["SEGMENT<br/>TotalSegmentator<br/>Craniofacial structures + teeth"]
+
+    B --> C["3D BINARY MASKS<br/>One mask per anatomical structure"]
+
+    C --> D["PROJECT TO 2D<br/>Maximum projection along each axis<br/>Axial · coronal · sagittal"]
+
+    C --> E["PROTOTYPE BENCHMARK<br/>Compare stored output size<br/>and comparison time"]
     D --> E
-    C --> F["PAIR CORRESPONDING STRUCTURES<br/>For 2D, also match the projection view"]
+
+    C --> F["MATCH CORRESPONDING ANATOMY + VIEW"]
     D --> F
-    F --> G["REPEATABILITY<br/>Run 1 vs run 2 of the same scan<br/>Measure Dice + IoU"]
-    F --> H["BETWEEN-CASE EXPLORATION<br/>Person1 vs Person2, run 1<br/>Measure Dice + IoU"]
-    classDef compact fill:#168B8A,stroke:#168B8A,color:#FFFFFF
+
+    F --> G["REPEATABILITY CHECK<br/>Same scan · run 1 vs run 2<br/>Dice + IoU"]
+
+    F --> H["EXPLORATORY BETWEEN-CASE CHECK<br/>Person1 vs Person2<br/>Dice + IoU"]
+
+    classDef projection fill:#168B8A,stroke:#168B8A,color:#FFFFFF
     classDef result fill:#17324D,stroke:#17324D,color:#FFFFFF
-    class D compact
+
+    class D projection
     class E,G,H result
 ```
 
