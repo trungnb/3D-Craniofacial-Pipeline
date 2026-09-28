@@ -1,21 +1,19 @@
-# 3D-to-2D craniofacial comparison
+# Prototype 3D-to-2D Craniofacial Shape Analysis for Forensic Identification
 
-A two-CBCT prototype exploring multi-view silhouettes for forensic identification.
-The idea is to compare compact 2D projections of segmented anatomy instead of comparing
-only the full 3D volumes.
+A two-CBCT proof-of-concept exploring multi-view silhouettes as compact representations for potential forensic identification workflows. The prototype compares compact 2D projections of segmented craniofacial anatomy with the corresponding full 3D masks.
 
-## Four prototype goals
+## Four prototype checks
 
-| Goal | Saved result in this prototype |
+| Check | Saved observation in this prototype |
 |---|---|
-| **1. Comparing projections takes less time than comparing 3D volumes.** | Across the three saved comparisons: **6.80–7.92 s for 2D**, versus **392.51–608.80 s for 3D**. |
-| **2. Projections need less storage than 3D volumes.** | Person1: **160.34 MB → 1.03 MB**. Person2: **119.27 MB → 897.77 KB** (3D output → 2D output, run 1). |
-| **3. Projections from the same person are similar.** | Projection Dice and IoU are **approximately 1.00** for both repeated-run comparisons. |
-| **4. Projections from two different people differ.** | Person1 vs Person2: projection Dice **0.324**, IoU **0.313**. |
+| **1. Projection comparison is faster in the saved prototype runs.** | Across the three saved comparisons: **6.80–7.92 s for 2D**, versus **392.51–608.80 s for 3D**. |
+| **2. Projection outputs require less stored space in the saved runs.** | Person1: **160.34 MB → 1.03 MB**. Person2: **119.27 MB → 897.77 KB** (3D mask output → 2D projection output, run 1). |
+| **3. Repeated projections from the same scan are highly consistent.** | Projection Dice and IoU are **approximately 1.00** for both repeated-run comparisons. |
+| **4. The two cases differ in this exploratory comparison.** | Person1 vs Person2: projection Dice **0.324**, IoU **0.313**. |
 
-**Dice and IoU measure overlap: both range from 0 (no overlap) to 1 (identical masks).** Values above are rounded; the CSVs retain the original precision.
+**Dice and IoU measure overlap:** both range from 0 (no overlap) to 1 (identical masks). Values above are rounded; the CSVs retain the original precision.
 
-![Four prototype checks: comparison time, storage, same-person overlap and between-person overlap](results/figures/prototype-overview.png)
+![Four prototype checks: comparison time, storage, repeated same-scan overlap and between-case overlap](results/figures/prototype-overview.png)
 
 ## How I approached it
 
@@ -28,38 +26,42 @@ flowchart TD
     D --> E
     C --> F["PAIR CORRESPONDING STRUCTURES<br/>For 2D, also match the projection view"]
     D --> F
-    F --> G["SAME PERSON<br/>Run 1 vs run 2 of the same scan<br/>Measure Dice + IoU"]
-    F --> H["DIFFERENT PEOPLE<br/>Person1 vs Person2, run 1<br/>Measure Dice + IoU"]
+    F --> G["REPEATABILITY<br/>Run 1 vs run 2 of the same scan<br/>Measure Dice + IoU"]
+    F --> H["BETWEEN-CASE EXPLORATION<br/>Person1 vs Person2, run 1<br/>Measure Dice + IoU"]
     classDef compact fill:#168B8A,stroke:#168B8A,color:#FFFFFF
     classDef result fill:#17324D,stroke:#17324D,color:#FFFFFF
     class D compact
     class E,G,H result
 ```
 
-**Idea:** preserve anatomical shape in three compact silhouettes per structure, then
-check whether they retain similarity while reducing storage and comparison time.
-I connected segmentation, projection and baseline Dice / IoU comparison. For
-between-person comparisons, the code resamples 3D masks to the reference grid
-and resizes 2D masks when dimensions differ before calculating overlap.
+**Idea:** preserve anatomical shape in three compact silhouettes per structure, then test whether the representation remains stable across repeated processing while reducing comparison cost and stored output size.
+
+The prototype connects segmentation, projection and baseline Dice/IoU comparison. For the between-case comparison, 3D masks are resampled to the reference grid and 2D masks are resized when dimensions differ before overlap is calculated.
 
 ## Read the code and results
 
 - [Segmentation and projection notebook](notebooks/3D_Shape_Analysis_Pipeline.ipynb)
 - [Comparison notebook](notebooks/Comparison.ipynb)
 - [Repeated-run results and storage](results/summary_report.csv)
-- [Between-person results](results/p1vsp2_result.csv)
+- [Between-case results](results/p1vsp2_result.csv)
 - [Figure script](scripts/render_figures.py) — reads the two saved CSVs; requires Matplotlib.
+- [Prototype dependencies](requirements.txt)
 
-**Scope:** “same person” here means two pipeline runs on the **same CBCT scan**.
-The saved comparisons demonstrate these observations in two cases; they do not
-estimate identification accuracy in a larger population. AM–PM matching is the
-intended research application.
+## Scope and limitations
 
-**Reading the numbers:** comparison times exclude segmentation and projection generation.
-Storage strings retain their original labels; the figure uses MiB because the original
-formatter divided by 1024. Exact hardware conditions are not documented in the tables.
+This repository is a **prototype, not a validated identification system**.
 
-Source scans and masks are not distributed. Notebook code is preserved; historical
-outputs are presented through the saved tables. No analysis was rerun for this release.
+- "Repeated same-scan" comparisons use two pipeline runs on the **same CBCT scan**. They assess computational repeatability, not identification performance across independent examinations of the same person.
+- The between-case comparison is exploratory. Its overlap scores may reflect **acquisition geometry, field of view, voxel spacing, positioning and alignment**, as well as genuine anatomical differences.
+- Resampling and image resizing make the two saved cases computationally comparable, but the prototype does not yet perform anatomical registration or pose normalisation.
+- The saved results come from **two cases** and do not estimate identification accuracy, sensitivity, specificity or population-level discrimination.
+- Comparison times exclude segmentation and projection generation. Exact historical hardware conditions were not recorded.
+- Stored-size differences reflect the historical NIfTI-mask and PNG-projection outputs; they should not be interpreted as an intrinsic compression ratio of 3D versus 2D representations.
+- Source scans and masks are not distributed. Notebook code is preserved, and historical outputs are presented through the saved tables; no analysis was rerun for this public release.
+- Exact historical package versions were not recorded. `requirements.txt` documents the main dependencies rather than recreating the original environment bit-for-bit.
+
+## Intended next steps
+
+A research-grade extension would test independent scans from the same individuals, standardise or register anatomy before comparison, evaluate genuine–impostor score distributions in a larger cohort, and quantify identification performance with appropriate validation metrics.
 
 [trungnb](https://github.com/trungnb) · [Academic website](https://trungnb.github.io/)
