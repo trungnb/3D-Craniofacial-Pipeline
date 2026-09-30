@@ -19,32 +19,26 @@ A two-CBCT proof-of-concept exploring multi-view silhouettes as compact represen
 
 ```mermaid
 flowchart TD
-    A["Two CBCT scans in NIfTI format<br/>Process each scan twice"] --> B["SEGMENT<br/>TotalSegmentator<br/>Craniofacial structures + teeth"]
+    A["QUESTION<br/>Can segmented craniofacial anatomy be reduced to<br/>compact multi-view silhouettes for exploratory comparison?"]
+    --> B["PIPELINE<br/>NIfTI → TotalSegmentator<br/>craniofacial + dental masks"]
+    --> C["REPRESENTATION<br/>Axial · coronal · sagittal<br/>maximum projections"]
 
-    B --> C["3D BINARY MASKS<br/>One mask per anatomical structure"]
+    C --> D1["REPEATABILITY<br/>Same scan · run 1 vs run 2<br/>Direct Dice / IoU"]
+    C --> D2["BETWEEN CASES<br/>Person1 vs Person2<br/>3D resample · 2D resize → Dice / IoU"]
 
-    C --> D["PROJECT TO 2D<br/>Maximum projection along each axis<br/>Axial · coronal · sagittal"]
+    D1 --> E["SAVED EVIDENCE<br/>Near-identical repeat runs<br/>smaller saved outputs · faster saved comparisons"]
+    D2 --> E
 
-    C --> E["PROTOTYPE BENCHMARK<br/>Compare stored output size<br/>and comparison time"]
-    D --> E
+    E --> F["INTERPRETATION<br/>Projection representation was computationally<br/>stable in this two-case prototype"]
+    F --> G["BOUNDARY<br/>No anatomical registration or pose normalisation<br/>No identification-accuracy validation"]
 
-    C --> F["MATCH CORRESPONDING ANATOMY + VIEW"]
-    D --> F
-
-    F --> G["REPEATABILITY CHECK<br/>Same scan · run 1 vs run 2<br/>Dice + IoU"]
-
-    F --> H["EXPLORATORY BETWEEN-CASE CHECK<br/>Person1 vs Person2<br/>Dice + IoU"]
-
-    classDef projection fill:#168B8A,stroke:#168B8A,color:#FFFFFF
-    classDef result fill:#17324D,stroke:#17324D,color:#FFFFFF
-
-    class D projection
-    class E,G,H result
+    classDef method fill:#EDF7F6,stroke:#168B8A,color:#17324D
+    classDef evidence fill:#17324D,stroke:#17324D,color:#FFFFFF
+    class B,C,D1,D2 method
+    class E,F,G evidence
 ```
 
-**Idea:** preserve anatomical shape in three compact silhouettes per structure, then test whether the representation remains stable across repeated processing while reducing comparison cost and stored output size.
-
-The prototype connects segmentation, projection and baseline Dice/IoU comparison. For the between-case comparison, 3D masks are resampled to the reference grid and 2D masks are resized when dimensions differ before overlap is calculated.
+The two comparison branches answer different questions. Repeated same-scan runs assess computational repeatability. The exploratory between-case branch makes the saved cases computationally comparable by resampling 3D masks to the reference grid and resizing 2D masks when dimensions differ before Dice/IoU are calculated; it does not perform anatomical registration.
 
 ## Read the code and results
 
