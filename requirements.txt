@@ -4,4 +4,4 @@ matplotlib
 nibabel
 SimpleITK
 opencv-python
-TotalSegmentator
+TotalSegmentator==2.18.0

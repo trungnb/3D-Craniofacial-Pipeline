@@ -1,5 +1,7 @@
 # Prototype 3D-to-2D Craniofacial Shape Analysis for Forensic Identification
 
+[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/trungnb/3D-Craniofacial-Pipeline/blob/main/notebooks/Open_in_Colab_Run.ipynb)
+
 A two-CBCT proof-of-concept exploring multi-view silhouettes as compact representations for potential forensic identification workflows. The prototype compares compact 2D projections of segmented craniofacial anatomy with the corresponding full 3D masks.
 
 ## Four prototype checks
@@ -14,6 +16,19 @@ A two-CBCT proof-of-concept exploring multi-view silhouettes as compact represen
 **Dice and IoU measure overlap:** both range from 0 (no overlap) to 1 (identical masks). Values above are rounded; the CSVs retain the original precision.
 
 ![Four prototype checks: comparison time, storage, repeated same-scan overlap and between-case overlap](results/figures/prototype-overview.svg)
+
+## Run the pipeline in Google Colab
+
+The repository now has a dedicated **Open in Colab → choose dataset → select scans → Run** entrypoint:
+
+- [Open-in-Colab runner](notebooks/Open_in_Colab_Run.ipynb)
+- Put `.nii` / `.nii.gz` CBCT volumes in `My Drive/Pipeline/Data/`.
+- Select one or more scans in the notebook.
+- The runner records the assigned GPU, Python/PyTorch versions and TotalSegmentator version.
+- Segmentation and projection outputs are saved under `My Drive/Pipeline/runs/<run_id>/`.
+- The original notebooks remain available for reproducing the historical analysis structure.
+
+For a first public-data smoke test, use a single CBCT volume. Suitable public starting points include ToothFairy3 (NIfTI CBCT; registration required) and ToothFairy2 (official download requires an account).
 
 ## How I approached it
 
